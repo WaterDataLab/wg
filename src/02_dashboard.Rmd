@@ -1,36 +1,87 @@
 ---
-title: "Untitled"
+title: "ASR overview"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
-    vertical_layout: fill
+    orientation: rows
 ---
 
 ```{r setup, include=FALSE}
+library(plotly)
+library(tidyverse)
 library(flexdashboard)
+library(quantmod)
+library(highcharter)
+library(mapview)
+library(leaflet)
 ```
 
-Column {data-width=650}
------------------------------------------------------------------------
+Sensor A01 {data-navmenu="Sensors"}
+=====================================
 
-### Chart A
+### **Sensor A01** data last updated `r paste(Sys.time())`
 
 ```{r}
+SPY <- getSymbols("SPY", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE)
+SPY <- adjustOHLC(SPY)
+TWTR <- getSymbols("TWTR", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE)
+TWTR <- adjustOHLC(TWTR)
+TSLA <- getSymbols("TSLA", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE)
+TSLA <- adjustOHLC(TSLA)
+FB <- getSymbols("FB", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE)
+FB <- adjustOHLC(FB)
 
+# MA <- SMA(Cl(SPY), n = 5)
+
+highchart(type = "stock") %>% 
+  # create axis :)
+  hc_yAxis_multiples(create_yaxis(4, height = c(1, 1, 1, 1), turnopposite = TRUE)) %>% 
+  # series :D
+  hc_add_series(SPY, yAxis = 0, name = "Volume injected (gallons/day)", type = "line") %>% 
+  # hc_add_series(MA, yAxis = 0, name = "Moving average") %>% 
+  hc_add_series(TWTR, yAxis = 1, name = "Injection well hydraulic head (ft AMSL)", type = "line") %>% 
+  hc_add_series(TSLA, yAxis = 2, name = "Volume extracted (gallons/day)", type = "line") %>% 
+  hc_add_series(FB, yAxis = 3, name = "Injection Water Pressure (psi)", type = "line") %>% 
+  hc_tooltip(valueDecimals = 2) %>% 
+  hc_size(height = 800)
 ```
 
-Column {data-width=350}
------------------------------------------------------------------------
+Sensor B02 {data-navmenu="Sensors"}
+=====================================
 
-### Chart B
+### **Sensor B02** data last updated `r paste(Sys.time())`
 
 ```{r}
-
+highchart(type = "stock") %>% 
+  # create axis :)
+  hc_yAxis_multiples(create_yaxis(4, height = c(1, 1, 1, 1), turnopposite = TRUE)) %>% 
+  # series :D
+  hc_add_series(SPY, yAxis = 0, name = "Volume injected (gallons/day)", type = "line") %>% 
+  # hc_add_series(MA, yAxis = 0, name = "Moving average") %>% 
+  hc_add_series(TWTR, yAxis = 1, name = "Injection well hydraulic head (ft AMSL)", type = "line") %>% 
+  hc_add_series(TSLA, yAxis = 2, name = "Volume extracted (gallons/day)", type = "line") %>% 
+  hc_add_series(FB, yAxis = 3, name = "Injection Water Pressure (psi)", type = "line") %>% 
+  hc_tooltip(valueDecimals = 2) %>% 
+  hc_size(height = 800)
 ```
 
-### Chart C
+Map
+=======================================================================
+
+### Overview
 
 ```{r}
-
+data.frame(x = c(174.764474, 175.764474), 
+           y = c(-36.877245, -37.877245),
+           id = c("Sensor A01", "Sensor B02"), 
+           popup = c("<a href = '#sensor-a01'>Sensor A01</a>",
+                    "<a href = '#sensor-b02'>Sensor B02</a>")) %>% 
+  sf::st_as_sf(coords = c("x", "y"), crs = 4326) %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(popup = ~popup, label = ~id)
 ```
 
+
+### Download data
+
+Links to some data download here. 
