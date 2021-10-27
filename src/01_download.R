@@ -4,6 +4,8 @@ library(fs)
 library(httr)
 library(patchwork)
 
+source(here::here("src/functions/f_cdec_api.R"))
+
 path = "dynamicapp/req/CSVDataServlet"
 
 query = list(Stations = "MDB",
@@ -17,6 +19,7 @@ sensor_nums <- 291:292
 resp_flow <- map(sensor_nums, 
                  ~f_cdec_api(path = path, 
                              query = c(query, dur_code = "E", SensorNums = .x)))
+
 flow <- map_df(resp_flow, "content") %>%
   janitor::clean_names() %>% 
   mutate(date = as.Date(date_time),
@@ -27,6 +30,7 @@ flow <- map_df(resp_flow, "content") %>%
 # battery life API response 
 resp_bat <- f_cdec_api(path = path,
                        query = c(query, dur_code = "H", SensorNums = 14))
+
 bat <- resp_bat$content %>% 
   janitor::clean_names() %>% 
   mutate(date = as.Date(date_time),
