@@ -1,0 +1,176 @@
+---
+title: "ASR overview"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    theme: bootstrap
+    # yeti
+---
+
+```{r setup, include=FALSE}
+library(plotly)
+library(tidyverse)
+library(flexdashboard)
+library(quantmod)
+library(highcharter)
+library(mapview)
+library(leaflet)
+library(fontawesome)
+
+# pal
+pal <- rcartocolor::carto_pal(12, "Bold")
+
+# synthetic data
+SPY <- getSymbols("SPY", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE) 
+vol_in <- adjustOHLC(SPY)
+TWTR <- getSymbols("TWTR", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE) 
+vol_out <- adjustOHLC(TWTR) * -1
+TSLA <- getSymbols("TSLA", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE)
+hyd_head <- adjustOHLC(TSLA) * -1
+FB <- getSymbols("FB", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE)
+pressure <- adjustOHLC(FB)
+
+# value boxes
+# icons: https://ionic.io/ionicons/v2
+box_vol_in <- valueBox("+201.5 AF", icon = "ion-arrow-down-c", color = pal[6],
+                       caption = "Volume injected (last 7 days)")
+box_vol_out <- valueBox("-93 AF", icon = "ion-arrow-up-c", color = pal[5],
+                       caption = "Volume extracted (last 7 days)")
+box_filt_pres <- valueBox("52 PSI", icon = "ion-grid", color = pal[4],
+                          caption = "Last recorded filter tank pressure")
+box_hyd_head <- valueBox("-134.5 ft (BLS)", icon = "ion-ios-analytics-outline", color = pal[3],
+                          caption = "Last recorded hydraulic head")
+
+# accounting page
+box_vol_in_ytd <- valueBox("+2,103 AF", icon = "ion-arrow-down-c", color = pal[6],
+                          caption = "Volume injected YTD")
+box_vol_out_ytd <- valueBox("-5,103 AF", icon = "ion-arrow-up-c", color = pal[5],
+                          caption = "Volume extracted YTD")
+box_vol_diff_ytd <- valueBox("1,500 AF", icon = "ion-ios-speedometer-outline", color = pal[12],
+                          caption = "Volume difference YTD")
+```
+
+
+Injection
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Volume injected {.value-box}
+
+```{r}
+box_vol_in
+```
+
+### Volume extracted {.value-box}
+
+```{r}
+box_hyd_head
+```
+
+### Pressure {.value-box}
+
+```{r}
+box_filt_pres
+```
+
+Row
+-----------------------------------------------------------------------
+
+### **Sensor A-01** data last updated `r paste(Sys.time())`
+
+```{r}
+highchart(type = "stock") %>% 
+  hc_yAxis_multiples(create_yaxis(3, height = c(1, 1, 1), turnopposite = TRUE)) %>% 
+  hc_add_series(vol_in, yAxis = 0, name = "Volume injected (gpm)", 
+                type = "line", color = pal[6]) %>% 
+  hc_add_series(hyd_head, yAxis = 1, name = "Hydraulic head (ft BLS)", 
+                type = "line", color = pal[3]) %>% 
+  hc_add_series(pressure, yAxis = 2, name = "Filter tank pressure (PSI)", 
+                type = "line", color = pal[4]) %>% 
+  hc_tooltip(valueDecimals = 2) %>% 
+  hc_size(height = 800)
+```
+
+
+Extraction
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Volume extracted {.value-box}
+
+```{r}
+box_vol_out
+```
+
+### Volume extracted {.value-box}
+
+```{r}
+box_hyd_head
+```
+
+
+
+Row
+-----------------------------------------------------------------------
+
+
+### **Sensor A-01** data last updated `r paste(Sys.time())`
+
+```{r}
+highchart(type = "stock") %>% 
+  hc_yAxis_multiples(create_yaxis(2, height = c(1, 1), turnopposite = TRUE)) %>% 
+  hc_add_series(vol_out, yAxis = 0, name = "Volume extracted (gpm)",
+                type = "line", color = pal[7]) %>% 
+  hc_add_series(hyd_head, yAxis = 1, name = "Hydraulic head (ft BLS)", 
+                type = "line", color = pal[3]) %>% 
+  hc_tooltip(valueDecimals = 2) %>% 
+  hc_size(height = 800)
+```
+
+
+Water Accounting
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Volume injected YTD {.value-box}
+
+```{r}
+box_vol_in_ytd
+```
+
+### Volume extracted YTD {.value-box}
+
+```{r}
+box_vol_out_ytd
+```
+
+### Volume difference YTD {.value-box}
+
+```{r}
+box_vol_diff_ytd
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Monthly water budget
+
+```{r}
+df <- tibble(date = paste(rep("2021", 10),
+                          1:10, "01", sep = "-"), 
+             vol_in = round(rnorm(10, 100, 30), 1),
+             vol_out = round(rnorm(10, 50, 10), 1) * -1) %>% 
+  mutate(vol_diff = vol_in - vol_out)
+
+DT::datatable(df, rownames = FALSE, 
+              extensions = 'Buttons',
+              options = list(dom = 'Bfrtip',
+                             buttons = c('csv', 'excel')))
+```
