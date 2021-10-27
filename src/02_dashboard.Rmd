@@ -4,8 +4,16 @@ output:
   flexdashboard::flex_dashboard:
     orientation: rows
     theme: bootstrap
-    # yeti
+    # logo: ../etc/logo.jpg # needs to be 50 pixels high
+    # favicon: ../etc/wg_logo.png
 ---
+
+<!-- <style> -->
+<!-- .navbar-logo img { -->
+<!--     position: absolute; -->
+<!--     right: 0px; -->
+<!-- } -->
+<!-- </style> -->
 
 ```{r setup, include=FALSE}
 library(plotly)
@@ -46,7 +54,7 @@ box_vol_in_ytd <- valueBox("+2,103 AF", icon = "ion-arrow-down-c", color = pal[6
                           caption = "Volume injected YTD")
 box_vol_out_ytd <- valueBox("-5,103 AF", icon = "ion-arrow-up-c", color = pal[5],
                           caption = "Volume extracted YTD")
-box_vol_diff_ytd <- valueBox("1,500 AF", icon = "ion-ios-speedometer-outline", color = pal[12],
+box_vol_diff_ytd <- valueBox("+1,500 AF", icon = "ion-ios-speedometer-outline", color = pal[12],
                           caption = "Volume difference YTD")
 ```
 
