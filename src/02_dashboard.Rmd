@@ -124,7 +124,7 @@ Row
 highchart(type = "stock") %>% 
   hc_yAxis_multiples(create_yaxis(2, height = c(1, 1), turnopposite = TRUE)) %>% 
   hc_add_series(vol_out, yAxis = 0, name = "Volume extracted (gpm)",
-                type = "line", color = pal[7]) %>% 
+                type = "line", color = pal[5]) %>% 
   hc_add_series(hyd_head, yAxis = 1, name = "Hydraulic head (ft BLS)", 
                 type = "line", color = pal[3]) %>% 
   hc_tooltip(valueDecimals = 2) %>% 
