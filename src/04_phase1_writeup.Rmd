@@ -122,7 +122,7 @@ Whereas Phase 1A deliverables concern typical "backend" operations (e.g., extrac
 
 The dashboard is visible at [watergrid.io/ewd](https://watergrid.io/ewd/). It is designed around an ASR operation use case. It has three tabs for Injection, Extraction, and Water Accounting. Each tab shows summary values for the timeseries data at the top of the page with linked colors to the respective timeseries below. The "Water Accounting" page shows a high level summary of the volume injected and extracted (on the previous two pages) and the year-to-date volume difference. Data can be downloaded by clicking on the "CSV" and "Excel" buttons in the interactive data table, and brought into Excel for further analysis. The data table is searchable, and sortable. 
 
-```{r, out.width="100%"}
+```{r, out.width="100%", echo = FALSE}
 knitr::include_graphics(here("docs/dash_example.png"))
 ```
 
