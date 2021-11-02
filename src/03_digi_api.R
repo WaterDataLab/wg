@@ -27,13 +27,17 @@ l <- resp %>%
   resp_body_json() %>% 
   pluck("list")
 
-df <- tibble(value = map_dbl(l, "value"),
-             dt    = map_chr(l, "timestamp")) %>% 
+digi <- tibble(value = map_dbl(l, "value"),
+               dt    = map_chr(l, "timestamp")) %>% 
   mutate(dt = lubridate::ymd_hms(dt))
 
 # plot
-df %>% 
+p_digi <- digi %>% 
   # remove one crazy date in 1970
   filter(dt > lubridate::ymd("2019-01-01")) %>% 
   ggplot(aes(dt, value)) +
-  geom_point(pch = 21)
+  geom_point(pch = 21) +
+  geom_line(color = "red") +
+  labs(x = "", y = "Hydraulic head (ft)") +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank())

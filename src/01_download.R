@@ -4,6 +4,9 @@ library(fs)
 library(httr)
 library(patchwork)
 
+# load CDEC API function
+source(here("src/functions/f_cdec_api.R"))
+
 path = "dynamicapp/req/CSVDataServlet"
 
 query = list(Stations = "MDB",
