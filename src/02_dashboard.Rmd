@@ -1,5 +1,5 @@
 ---
-title: "ASR overview"
+title: "Storage & Recovery"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -17,28 +17,31 @@ library(mapview)
 library(leaflet)
 library(fontawesome)
 
+# set thousands place for highcharts
+hcoptslang <- getOption("highcharter.lang")
+hcoptslang$thousandsSep <- ","
+options(highcharter.lang = hcoptslang)
+
 # pal
 pal <- rcartocolor::carto_pal(12, "Bold")
 
 # synthetic data
 SPY <- getSymbols("SPY", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE) 
-vol_in <- adjustOHLC(SPY)
-TWTR <- getSymbols("TWTR", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE) 
-vol_out <- adjustOHLC(TWTR) * -1
-TSLA <- getSymbols("TSLA", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE)
-hyd_head <- adjustOHLC(TSLA) * -1
+vol_in <- (344.39 - adjustOHLC(SPY))*-10
+vol_out <- vol_in*-1
+hyd_head <- ((20 - vol_in/-10)*-1)+40
 FB <- getSymbols("FB", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE)
-pressure <- adjustOHLC(FB)
+pressure <- (382 - adjustOHLC(FB))/1.2
 
 # value boxes
 # icons: https://ionic.io/ionicons/v2
-box_vol_in <- valueBox("+201.5 AF", icon = "ion-arrow-down-c", color = pal[6],
+box_vol_in <- valueBox("+201.52 AF", icon = "ion-arrow-down-c", color = pal[6],
                        caption = "Volume injected (last 10 days)")
-box_vol_out <- valueBox("-93 AF", icon = "ion-arrow-up-c", color = pal[5],
+box_vol_out <- valueBox("-93.45 AF", icon = "ion-arrow-up-c", color = pal[5],
                        caption = "Volume extracted (last 10 days)")
-box_filt_pres <- valueBox("52 PSI", icon = "ion-grid", color = pal[4],
+box_filt_pres <- valueBox("39.99 PSI", icon = "ion-grid", color = pal[4],
                           caption = "Last recorded filter tank pressure")
-box_hyd_head <- valueBox("-134.5 ft (BLS)", icon = "ion-ios-analytics-outline", color = pal[3],
+box_hyd_head <- valueBox("-100.97 ft (BLS)", icon = "ion-ios-analytics-outline", color = pal[3],
                           caption = "Last recorded hydraulic head")
 
 # accounting page
