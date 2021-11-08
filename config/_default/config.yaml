@@ -3,9 +3,9 @@
 # Hugo Documentation: https://gohugo.io/getting-started/configuration/#all-configuration-settings
 # This file is formatted using YAML syntax - learn more at https://learnxinyminutes.com/docs/yaml/
 
-title: Online Courses # Website name
-baseurl: '' # Website URL
-copyright: '' # Footer text, e.g. '© {year} Me'
+title: Watergrid # Website name
+baseurl: 'watergrid.io' # Website URL
+copyright: '© {year} Watergrid.io, a product of [Water Data Lab LLC](https://www.waterdatalab.com/)' # Footer text, e.g. '© {year} Me'
 
 ############################
 ## LANGUAGE
