@@ -1,8 +1,25 @@
+/* logo on right and centered */
+.navbar-logo img {
+    position: absolute;
+    right: 0px;
+    bottom: 10px;
+}
+
+/* hide logo on mobile so it doesn't overlap menu */
+@media (max-width: 767px) {
+        .navbar-logo {
+          display: none;
+        }
+      }
+      
+/* archived code for a text-only logo
 .nav.navbar-nav.navbar-right li a {
   font-size: 20px; 
   font-weight: bold; 
   color: black;
 }
+
 .nav.navbar-nav.navbar-right a:hover {
   color: #0072ff;
 }
+*/
