@@ -4,7 +4,11 @@ output:
   flexdashboard::flex_dashboard:
     orientation: rows
     theme: bootstrap
+    css: "www/style.css"
     # yeti
+    # logo: www/myimage.png
+    navbar:
+      - {title: "Watergrid", href: "https://watergrid.io/", target: "_blank", position: "right"}
 ---
 
 ```{r setup, include=FALSE}
