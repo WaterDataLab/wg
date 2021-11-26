@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1935.1182"
+   height="1935.1182"
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
+   sodipodi:docname="favicon.svg"
+   inkscape:export-filename="/Users/richpauloo/Documents/GitHub/wg/favicon.png"
+   inkscape:export-xdpi="25.4"
+   inkscape:export-ydpi="25.4"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     width="512mm"
+     units="px"
+     inkscape:zoom="0.22645918"
+     inkscape:cx="593.92602"
+     inkscape:cy="-677.82635"
+     inkscape:window-width="1526"
+     inkscape:window-height="969"
+     inkscape:window-x="0"
+     inkscape:window-y="23"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <ellipse
+       style="fill:#0072ff;fill-opacity:1;stroke-width:0.349919"
+       id="path15136"
+       cx="256.45261"
+       cy="257.03674"
+       rx="252.94754"
+       ry="253.53171" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:410.629px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.279974"
+       x="80.915054"
+       y="414.72595"
+       id="text1434"
+       transform="scale(0.96499453,1.0362753)"><tspan
+         sodipodi:role="line"
+         id="tspan1432"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:410.629px;font-family:'Apple SD Gothic Neo';-inkscape-font-specification:'Apple SD Gothic Neo Bold';fill:#ffffff;fill-opacity:1;stroke-width:0.279974"
+         x="80.915054"
+         y="414.72595">W</tspan></text>
+  </g>
+</svg>
