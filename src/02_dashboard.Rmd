@@ -3,13 +3,17 @@ title: "Storage & Recovery"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
-    theme: bootstrap
+    theme: bootstrap # yeti
     css: "www/style.css"
-    # yeti
-    # logo: www/myimage.png
-    navbar:
-      - {title: "Watergrid", href: "https://watergrid.io/", target: "_blank", position: "right"}
+    logo: "etc/logo.svg"
+    favicon: "etc/icon.png"
+    # navbar:
+    #   - {title: "Watergrid", href: "https://watergrid.io/", target: "_blank", position: "right"}
 ---
+
+<script>
+$('.navbar-logo').wrap('<a href="https://www.watergrid.io" target="_blank">');
+</script>
 
 ```{r setup, include=FALSE}
 library(plotly)
