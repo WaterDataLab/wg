@@ -4,9 +4,9 @@ output:
   flexdashboard::flex_dashboard:
     orientation: rows
     theme: bootstrap # yeti
-    css: "www/style.css"
-    logo: "etc/logo.svg"
-    favicon: "etc/icon.png"
+    css: "../www/style.css"
+    logo: "../etc/logo.svg"
+    favicon: "../etc/icon.png"
     # navbar:
     #   - {title: "Watergrid", href: "https://watergrid.io/", target: "_blank", position: "right"}
 ---
@@ -183,5 +183,8 @@ df <- tibble(date = paste(rep("2021", 10),
 DT::datatable(df, rownames = FALSE, 
               extensions = 'Buttons',
               options = list(dom = 'Bfrtip',
-                             buttons = c('csv', 'excel')))
+                             buttons = c('csv', 'excel'), 
+                             pageLength = 100,
+                             scrollY = "100vh",
+                             scrollCollapse = FALSE))
 ```
