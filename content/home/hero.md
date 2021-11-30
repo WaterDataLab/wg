@@ -25,9 +25,7 @@ advanced:
 ---
 <br>
 
-Custom water accounting tools that prioritize  
-- ease of use  
-- privacy protection  
-- affordability
+You depend on data for decision-making, but gathering, cleaning, and visualizing it is time-consuming and expensive. Watergrid offers _microservices_ that automate these tasks, freeing up time and budget to tackle everything else on your plate.  
+
 
 <br>

@@ -29,4 +29,4 @@ design:
   columns: '1'
 ---
 
-Please send an email describing your custom dashboard needs and our team will get in touch to schedule a demo and discuss options. 
+Please send an email describing your big picture goal and we'll be in touch to schedule a demo and discuss options. 
