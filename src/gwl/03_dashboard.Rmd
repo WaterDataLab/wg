@@ -1,0 +1,120 @@
+---
+title: "Groundwater levels"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    theme: bootstrap 
+    css: "../www/style.css"
+    logo: "../etc/logo.svg"
+    favicon: "../etc/icon.png"
+params: 
+  AOI: "000"
+---
+
+<script>
+  $('.navbar-logo').wrap('<a href="https://www.watergrid.io" target="_blank">');
+</script>
+
+<style>
+  .custom-icon {
+    fill: #ADADAD;
+  }
+  .custom-icon:hover {
+    fill: #DA4567;
+  }
+  div.leaflet-popup-content {width:auto !important;}
+</style>
+
+```{r setup, include=FALSE}
+library(plotly)
+library(tidyverse)
+library(flexdashboard)
+library(leaflet)
+library(fontawesome)
+
+# pal
+pal <- rcartocolor::carto_pal(12, "Bold")
+
+# filter groundwater level data to supplied parameter
+gwl_gsa <- filter(gwl, GSA_Name == params$AOI)
+
+# value boxes
+# icons: https://ionic.io/ionicons/v2
+box_gwl_median <- valueBox("+201.52 AF", icon = "ion-arrow-down-c", color = pal[6],
+                           caption = "Volume injected (last 10 days)")
+box_gwl_range <- valueBox("-93.45 AF", icon = "ion-arrow-up-c", color = pal[5],
+                          caption = "Volume extracted (last 10 days)")
+box_number_wells <- valueBox("39.99 PSI", icon = "ion-grid", color = pal[4],
+                             caption = "Last recorded filter tank pressure")
+```
+
+
+Map
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Groundwater level median {.value-box}
+
+```{r}
+box_gwl_median
+```
+
+### Groundwater level range (10-90th percentiles) {.value-box}
+
+```{r}
+box_gwl_range
+```
+
+### Number of monitoring well {.value-box}
+
+```{r}
+box_number_wells
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Data last updated `r paste(Sys.time())`
+
+```{r}
+preprocessed$l
+```
+
+
+Timeseries
+=======================================================================
+
+
+Row {.tabset}
+-----------------------------------------------------------------------
+
+### Groundwater elevation (ft AMSL)
+
+```{r}
+ggplotly(
+  ggplot(preprocessed$maoi, aes(MSMT_DATE, GWE, color = SITE_CODE)) +
+    geom_point() +
+    geom_line(alpha = 0.5) +
+    guides(color = "none")
+  )
+```
+
+### Groundwater depth below land surface (ft)
+
+```{r}
+ggplotly(
+  ggplot(preprocessed$maoi, aes(MSMT_DATE, -GSE_GWE, color = SITE_CODE)) +
+    geom_point() +
+    geom_line(alpha = 0.5) +
+    guides(color = "none")
+  )
+```
+
+
+
+About
+=======================================================================
+
+asdfasd
