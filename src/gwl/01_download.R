@@ -1,5 +1,4 @@
-library(tidyverse)
-library(sf)
+st <- Sys.time()
 
 # increase timeout to download larger data
 options(timeout = 1000)
@@ -21,25 +20,33 @@ cat("Done.\n")
 
 # read gsa polygons
 cat("Reading GSA polygons...")
-gsa <- st_read(unzip(tf1, "GSA_Master.shp")) %>% st_transform(3310)
+unzip(tf1)
+gsa <- st_read("GSA_Master.shp") %>% 
+  st_transform(3310) %>% 
+  rmapshaper::ms_simplify(keep_shapes = TRUE)
 cat("Done.\n")
 
 # read gwl data and make spatial
 cat("Reading groundwater level measurements, stations, perforations...")
-gwl <- c("measurements.csv", "stations.csv", "perforations.csv") %>% 
+files_meas <- c("measurements.csv", "stations.csv", "perforations.csv")
+gwl <- files_meas %>% 
   map(~read_csv(unzip(tf2, .x))) %>% 
   reduce(left_join, "SITE_CODE") %>% 
-  st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4269) %>% 
+  select(-MONITORING_PROGRAM.x, MONITORING_PROGRAM = MONITORING_PROGRAM.y) %>% 
+  # remove old measurements and nonsense above land surface measurements
+  filter(MSMT_DATE >= lubridate::ymd("1960-01-01") & GSE_GWE >= 0) %>%
+  st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4269, remove = FALSE) %>% 
   st_transform(3310) %>% 
-  # add GSA data and remove: stations outside of GSAs, old measurements
+  # add GSA data and remove: stations outside of GSAs
   st_join(gsa) %>% 
-  filter(!is.na(GSA_Name) & MSMT_DATE >= lubridate::ymd("1960-01-01")) %>%
+  filter(!is.na(GSA_Name)) %>%
+  st_drop_geometry() %>% 
   # only retain sites with at least 3 measurements
   group_by(SITE_CODE) %>% 
   mutate(n = n()) %>% 
   ungroup() %>% 
-  filter(n >= 3) %>% 
-  select(-MONITORING_PROGRAM.x, -n, MONITORING_PROGRAM = MONITORING_PROGRAM.y) 
+  filter(n >= 3)
+  
 cat("Done.\n")
 
 # TODO: download and join HUC8 boundaries to filter in the next step
@@ -50,4 +57,9 @@ wyt <- read_csv(url_wyt)
 cat("Done.\n")
 
 # clean up
-walk(c(tf1, tf2, tf3), ~unlink(.x))
+files_rm <- c(dir_ls(here(), regexp = "GSA_Master"), 
+              here(files_meas),
+              c(tf1, tf2, tf3))
+walk(files_rm, ~unlink(.x))
+
+Sys.time() - st; rm(st)
