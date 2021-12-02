@@ -23,16 +23,19 @@ source(here("src/gwl/01_download.R"))
 
 ids_select <- c(84, 219)
 
+ids_select <- c(84) # 219
+
 for(i in seq_along(ids_select)){
-  cat("Preprocessing data for GSA_ID", i, "...")
+  id <- ids_select[i]
+  cat("Preprocessing data for GSA_ID", id, "...")
   preprocessed <- f_gwl_preprocess(id)
   cat("Done.\n")
   
-  cat("Writing dashboard for GSA_ID", i, "...")
+  cat("Writing dashboard for GSA_ID", id, "...")
   f_write_dashboard(id)
   cat("Done.\n")
   
-  cat("Zipping data for GSA_ID", i, "...")
+  cat("Zipping data for GSA_ID", id, "...")
   file_data <- here(glue::glue("content/gsa-{id}/gsa-{id}.csv"))
   file_zip  <- str_replace(file_data, ".csv", ".zip")
   
