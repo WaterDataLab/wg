@@ -7,6 +7,8 @@ output:
     css: "../www/style.css"
     logo: "../etc/logo.svg"
     favicon: "../etc/icon.png"
+    navbar: 
+      - { icon: "fa-download", href: "https://google.com", target: "_blank", align: "left", padding: "200px" }
 params: 
   AOI: "000"
 ---

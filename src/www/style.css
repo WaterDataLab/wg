@@ -5,9 +5,18 @@
     bottom: 10px;
 }
 
+.fa-download {
+    position: absolute;
+    left: 275px;
+    bottom: 0px;
+}
+
 /* hide logo on mobile so it doesn't overlap menu */
 @media (max-width: 767px) {
         .navbar-logo {
+          display: none;
+        }
+        .fa-download {
           display: none;
         }
       }
