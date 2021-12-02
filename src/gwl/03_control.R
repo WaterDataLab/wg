@@ -19,18 +19,29 @@ source(here("src/functions/f_gwl_preprocess.R"))
 source(here("src/gwl/01_download.R"))
 
 # build all dashboards
-# id <- unique(gwl$GSA_ID)[20]
+# id <- 84 # small iterable
 
 ids_select <- c(84, 219)
+
+for(i in seq_along(ids_select)){
+  cat("Preprocessing data for GSA_ID", i, "...")
+  preprocessed <- f_gwl_preprocess(id)
+  cat("Done.\n")
   
-preprocessed <- f_gwl_preprocess(id)
-f_write_dashboard(id)
-
-# data csv and zip files
-file_data <- here(glue::glue("content/gsa-{id}/gsa-{id}.csv"))
-file_zip  <- str_replace(file_data, ".csv", ".zip")
-
-# write csv, zip it up, and rm csv
-gwl %>% filter(GSA_ID == id) %>% write_csv(file_data)
-zip(zipfile = file_zip, files = file_data, extras = "-j")
-unlink(file_data)
+  cat("Writing dashboard for GSA_ID", i, "...")
+  f_write_dashboard(id)
+  cat("Done.\n")
+  
+  cat("Zipping data for GSA_ID", i, "...")
+  file_data <- here(glue::glue("content/gsa-{id}/gsa-{id}.csv"))
+  file_zip  <- str_replace(file_data, ".csv", ".zip")
+  
+  # write csv, zip it up, and rm csv
+  gwl %>% filter(GSA_ID == id) %>% write_csv(file_data)
+  zip(zipfile = file_zip, files = file_data, extras = "-j")
+  cat("Done.\n")
+  
+  cat("Cleaning up...")
+  unlink(file_data)
+  cat("Done.\n")
+}
