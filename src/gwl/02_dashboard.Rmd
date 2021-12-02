@@ -8,7 +8,7 @@ output:
     logo: "../etc/logo.svg"
     favicon: "../etc/icon.png"
     navbar: 
-      - { icon: "fa-download", href: "https:", target: "_blank", align: "left", padding: "200px" }
+      - { icon: "fa-download", href: "https://github.com/WaterDataLab/wg/raw/main/content/gsa-84/gsa-84.zip", target: "_blank", align: "left", padding: "200px" }
 params: 
   AOI: "000"
 ---

@@ -21,8 +21,6 @@ source(here("src/gwl/01_download.R"))
 # build all dashboards
 # id <- 84 # small iterable
 
-ids_select <- c(84, 219)
-
 ids_select <- c(84) # 219
 
 for(i in seq_along(ids_select)){
