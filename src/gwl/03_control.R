@@ -1,3 +1,6 @@
+cat("Starting transform and render pipeline.")
+st <- Sys.time()
+
 library(here)
 library(fs)
 library(tidyverse)
@@ -21,7 +24,9 @@ source(here("src/gwl/01_download.R"))
 # build all dashboards
 # id <- 84 # small iterable
 
-ids_select <- c(85) # 219
+ids_select <- c(84) # 219
+
+cat("  Building", length(ids_select), "id(s):", paste0("\n      ", ids_select))
 
 for(i in seq_along(ids_select)){
   
@@ -30,40 +35,40 @@ for(i in seq_along(ids_select)){
   cat("Starting pipeline for GSA_ID", id, "[", i, "/", length(ids_select), "].\n")
   
   cat("  Preprocessing data...")
-  preprocessed <- f_gwl_preprocess(id)
+  preprocessed <- suppressWarnings(f_gwl_preprocess(id))
   cat("done.\n")
   
   cat("  Zipping data...")
-  file_data <- here(glue::glue("content/gsa-{id}/gsa-{id}.csv"))
-  file_zip  <- str_replace(file_data, ".csv", ".zip")
-  file_s3   <- glue::glue("s3://wg-gwl/gsa-{id}/gsa-{id}.zip")
-  file_sign <- here("presigned_url.txt")
+  file_data   <- here(glue::glue("content/gsa-{id}/gsa-{id}.csv"))
+  file_zip    <- str_replace(file_data, ".csv", ".zip")
+  file_html   <- here(glue::glue("content/gsa-{id}/index.html"))
+  file_s3     <- glue::glue("s3://wg-gwl/gsa-{id}/gsa-{id}.zip")
+  file_signed <- here("presigned_url.txt")
   
   # write csv, zip it up, and rm csv
+  if(!dir_exists(fs::path_dir(file_data))){
+    dir_create(fs::path_dir(file_data))
+  }
   preprocessed$maoi %>% write_csv(file_data)
   zip(zipfile = file_zip, files = file_data, extras = "-j")
-  cat("done.\n")
   
   # move to s3 and generate presigned URL
-  cat("  Pushing to S3 and generating presigned URL...")
-  cmd_push <- glue::glue("aws s3 cp {file_zip} {file_s3}")
-  # presigned url valid for a week (604800 seconds) written to a file
-  cmd_sign <- glue::glue("aws s3 presign {file_s3} --expires-in 604800 > {file_sign}")
-  system(cmd_push)
-  system(cmd_sign)
-  cat("done.\n")
+  cat("\n  Pushing to S3 and generating presigned URL...")
+  f_s3_copy(file_zip, file_s3)
+  presigned_url <- f_s3_sign(file_s3, file_signed) 
   
   cat("  Writing dashboard...")
-  presigned_url <- readLines(file_sign)
   f_write_dashboard(id)
-  cat("done.\n")
   
   cat("  Encrypting dashboard...")
-  # TODO: encryption
-  # f_encrypt_dashboard(id)
+  f_encrypt_file(id)
   cat("done.\n")
   
   cat("  Cleaning up...")
-  unlink(file_data); unlink(file_zip); unlink(file_sign)
+  unlink(file_data); unlink(file_zip)
   cat("done.\n\n")
 }
+
+total_time <- Sys.time() - st
+cat("  Finished download pipline after:", total_time, "minutes.\n\n\n")
+rm(total_time, st)

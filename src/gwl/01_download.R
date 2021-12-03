@@ -1,3 +1,4 @@
+cat("Starting download pipeline.")
 st <- Sys.time()
 
 # increase timeout to download larger data
@@ -14,20 +15,20 @@ url_gwl <- "https://data.cnra.ca.gov/dataset/dd9b15f5-6d08-4d8c-bace-37dc761a9c0
 url_wyt <- "https://data.cnra.ca.gov/dataset/806ce291-645b-4646-8e15-9295b7740f5a/resource/b8fae043-4458-40f1-935c-4748157cbf92/download/sgma_wyt_dataset.csv"
 
 # download files
-cat("Downloading GSA and GWL urls...")
+cat("  Downloading GSA and GWL urls...")
 walk2(c(url_gsa, url_gwl), c(tf1, tf2), ~download.file(.x, .y))
-cat("Done.\n")
+cat("done.\n")
 
 # read gsa polygons
-cat("Reading GSA polygons...")
+cat("  Reading GSA polygons...")
 unzip(tf1)
 gsa <- st_read("GSA_Master.shp") %>% 
   st_transform(3310) %>% 
   rmapshaper::ms_simplify(keep_shapes = TRUE)
-cat("Done.\n")
+cat("done.\n")
 
 # read gwl data and make spatial
-cat("Reading groundwater level measurements, stations, perforations...")
+cat("  Reading groundwater level measurements, stations, perforations...")
 files_meas <- c("measurements.csv", "stations.csv", "perforations.csv")
 gwl <- files_meas %>% 
   map(~read_csv(unzip(tf2, .x))) %>% 
@@ -47,19 +48,23 @@ gwl <- files_meas %>%
   ungroup() %>% 
   filter(n >= 3)
   
-cat("Done.\n")
+cat("done.\n")
 
 # TODO: download and join HUC8 boundaries to filter in the next step
 
 # water year types from SGMA portal
-cat("Downloading water year types...")
+cat("  Downloading water year types...")
 wyt <- read_csv(url_wyt)
-cat("Done.\n")
+cat("done.\n")
 
 # clean up
+cat("  Cleaning up...")
 files_rm <- c(dir_ls(here(), regexp = "GSA_Master"), 
               here(files_meas),
               c(tf1, tf2, tf3))
 walk(files_rm, ~unlink(.x))
+cat("done.\n")
 
-Sys.time() - st; rm(st)
+total_time <- Sys.time() - st
+cat("  Finished download pipline after:", total_time, "\n\n\n")
+rm(total_time, st)
