@@ -1,5 +1,5 @@
 ---
-title: "Groundwater levels"
+title: "Well Field"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -8,7 +8,11 @@ output:
     logo: "../etc/logo.svg"
     favicon: "../etc/icon.png"
     navbar: 
-      - { icon: "fa-download", href: !expr presigned_url, target: "_blank", align: "left", padding: "200px" }
+      - { title: "Data", href: "#data", align: left }
+      - { title: "Risk", href: "#risk", align: left }
+      - { title: "Insight", href: "#insight", align: left }
+      - { title: "About", href: "#about", align: left }
+      - { icon: "fa-download", href: !expr presigned_url, target: "_blank", align: "left" }
 params: 
   AOI: "000"
 ---
@@ -24,7 +28,9 @@ params:
   .custom-icon:hover {
     fill: #DA4567;
   }
-  div.leaflet-popup-content {width:auto !important;}
+  div.leaflet-popup-content {
+    width:auto !important;
+  }
 </style>
 
 ```{r setup, include=FALSE}
@@ -55,7 +61,7 @@ box_number_wells <- valueBox(length(unique(gwl_gsa$SITE_CODE)),
 ```
 
 
-Map
+Data {.hidden}
 =======================================================================
 
 Row
@@ -79,7 +85,7 @@ box_gwl_range
 box_number_wells
 ```
 
-Row
+Row {.tabset}
 -----------------------------------------------------------------------
 
 ### **Monitoring locations**, last updated `r paste(Sys.time())`
@@ -88,14 +94,6 @@ Row
 preprocessed$l
 ```
 
-
-Timeseries
-=======================================================================
-
-
-<!-- Row {.tabset} -->
-Row
------------------------------------------------------------------------
 
 ### **Groundwater depth below land surface (ft)**, last updated `r paste(Sys.time())`
 
@@ -109,7 +107,16 @@ ggplotly(
 ```
 
 
-About
+Risk {.hidden}
+=======================================================================
+
+
+Insight {.hidden}
+=======================================================================
+
+
+
+About {.hidden}
 =======================================================================
 
 Row {.tabset}
