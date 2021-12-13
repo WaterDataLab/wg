@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><metadata>
+    <idinfo>
+        <citation>
+            <citeinfo>
+                <origin/>
+                <title>B118 SGMA 2019 Basin Prioritization</title>
+                <onlink>https://gis.water.ca.gov/arcgis/rest/services/Geoscientific/i08_B118_SGMA_2019_Basin_Prioritization/FeatureServer</onlink>
+            </citeinfo>
+        </citation>
+        <descript>
+            <abstract>This service displays the Sustainable Groundwater Management Act (SGMA) 2019 Basin Prioritization for California's 515 groundwater basins.  The final results of SGMA 2019 Basin Prioritization were released on December 6, 2019.</abstract>
+            <purpose>Groundwater basins classified by SGMA 2019 basin boundaries.</purpose>
+        </descript>
+        <keywords>
+            <theme>
+                <themekt>None</themekt>
+                <themekey>groundwater basin</themekey>
+                <themekey>B118</themekey>
+                <themekey>California</themekey>
+                <themekey>SGMA</themekey>
+                <themekey>groundwater</themekey>
+                <themekey>basins</themekey>
+                <themekey>aquifers</themekey>
+                <themekey>sustainable</themekey>
+                <themekey>2019</themekey>
+                <themekey>prioritization</themekey>
+                <themekey>Bulletin 118</themekey>
+                <themekey>CAOpenData</themekey>
+                <themekey>California Department of Water Resources</themekey>
+                <themekey>California Natural Resources Agency</themekey>
+            </theme>
+        </keywords>
+        <accconst>Other Constraints</accconst>
+        <useconst>None</useconst>
+        <datacred>California Department of Water Resources, SGMO. Contact: gis@water.ca.gov</datacred>
+    </idinfo>
+    <metainfo>
+        <metd>20210630</metd>
+        <metc>
+            <cntinfo>
+                <cntorgp>
+                    <cntorg>California Department of Water Resources</cntorg>
+                </cntorgp>
+            </cntinfo>
+        </metc>
+        <metstdn>FGDC Content Standard for Digital Geospatial Metadata</metstdn>
+        <metstdv>FGDC-STD-001-1998</metstdv>
+        <mettc>local time</mettc>
+    </metainfo>
+</metadata>

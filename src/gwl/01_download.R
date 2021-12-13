@@ -4,6 +4,14 @@ st <- Sys.time()
 # increase timeout to download larger data
 options(timeout = 1000)
 
+# read Bulletin 118 subbasins
+b118_names <- read_csv(here("src/gwl/data_input/b118/b118_names.csv")) %>% 
+  select(-Basin_Su_1) 
+b118 <- st_read(here("src/gwl/data_input/b118/shp/B118_SGMA_2019_Basin_Prioritization.shp")) %>% 
+  st_transform(3310) %>% 
+  left_join(b118_names) %>% 
+  rmapshaper::ms_simplify(keep_shapes = TRUE)
+
 # tempfiles to hold downloaded data
 tf1 <- tempfile()
 tf2 <- tempfile()
@@ -24,12 +32,16 @@ cat("  Reading GSA polygons...")
 unzip(tf1)
 gsa <- st_read("GSA_Master.shp") %>% 
   st_transform(3310) %>% 
-  rmapshaper::ms_simplify(keep_shapes = TRUE)
+  rmapshaper::ms_simplify(keep_shapes = TRUE) %>% 
+  separate(Basin, into = c("Basin_Subb","rm"), sep = " ", extra = "drop") %>% 
+  select(-rm) %>% 
+  left_join(b118_names)
 cat("done.\n")
 
 # read gwl data and make spatial
 cat("  Reading groundwater level measurements, stations, perforations...")
 files_meas <- c("measurements.csv", "stations.csv", "perforations.csv")
+
 gwl <- files_meas %>% 
   map(~read_csv(unzip(tf2, .x))) %>% 
   reduce(left_join, "SITE_CODE") %>% 
@@ -40,17 +52,22 @@ gwl <- files_meas %>%
   st_transform(3310) %>% 
   # add GSA data and remove: stations outside of GSAs
   st_join(gsa) %>% 
-  filter(!is.na(GSA_Name)) %>%
+  # overwrite B118 boundaries because some are missing and others are wrong
+  select(-BASIN_CODE) %>% 
+  st_join(select(b118, BASIN_CODE = Basin_Subb)) %>% 
+  # only retain points in B118 basins
+  filter(!is.na(BASIN_CODE)) %>%
   st_drop_geometry() %>% 
   # only retain sites with at least 3 measurements
   group_by(SITE_CODE) %>% 
   mutate(n = n()) %>% 
   ungroup() %>% 
-  filter(n >= 3)
+  filter(n >= 3) 
   
 cat("done.\n")
 
-# TODO: download and join HUC8 boundaries to filter in the next step
+
+# TODO: download and join HUC8 boundaries for WYT to filter in the next step
 
 # water year types from SGMA portal
 cat("  Downloading water year types...")
@@ -66,5 +83,5 @@ walk(files_rm, ~unlink(.x))
 cat("done.\n")
 
 total_time <- Sys.time() - st
-cat("  Finished download pipline after:", total_time, "\n\n\n")
+cat("  Finished download pipline after:", total_time, "minutes. \n\n\n")
 rm(total_time, st)

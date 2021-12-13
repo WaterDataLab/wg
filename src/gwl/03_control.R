@@ -14,35 +14,35 @@ library(htmlwidgets)
 library(plotly)
 
 # helper functions
-source(here("src/functions/f_gwl_helpers.R"))
-source(here("src/functions/f_calculate_water_year.R"))
-source(here("src/functions/f_gwl_preprocess.R"))
+source(here("src/gwl/functions/f_gwl_helpers.R"))
+source(here("src/gwl/functions/f_calculate_water_year.R"))
+source(here("src/gwl/functions/f_gwl_preprocess.R"))
 
 # download data
 source(here("src/gwl/01_download.R"))
 
 # build all dashboards
-# id <- 84 # small iterable
-
-ids_select <- c(84) # 219
+# ids_select <- unique(gwl$web_name)
+ids_select <- c("sasb") 
 
 cat("  Building", length(ids_select), "id(s):", paste0("\n      ", ids_select))
 
 for(i in seq_along(ids_select)){
   
+  # i=1
   id <- ids_select[i]
   
-  cat("Starting pipeline for GSA_ID", id, "[", i, "/", length(ids_select), "].\n")
+  cat("Starting pipeline for B118 basin:", id, "[", i, "/", length(ids_select), "].\n")
   
   cat("  Preprocessing data...")
   preprocessed <- suppressWarnings(f_gwl_preprocess(id))
   cat("done.\n")
   
   cat("  Zipping data...")
-  file_data   <- here(glue::glue("content/gsa-{id}/gsa-{id}.csv"))
+  file_data   <- here(glue::glue("content/{id}/{id}.csv"))
   file_zip    <- str_replace(file_data, ".csv", ".zip")
-  file_html   <- here(glue::glue("content/gsa-{id}/index.html"))
-  file_s3     <- glue::glue("s3://wg-gwl/gsa-{id}/gsa-{id}.zip")
+  file_html   <- here(glue::glue("content/{id}/index.html"))
+  file_s3     <- glue::glue("s3://wg-gwl/{id}/{id}.zip")
   file_signed <- here("presigned_url.txt")
   
   # write csv, zip it up, and rm csv
