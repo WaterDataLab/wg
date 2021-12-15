@@ -44,7 +44,7 @@ library(fontawesome)
 pal <- rcartocolor::carto_pal(12, "Bold")
 
 # filter groundwater level data to supplied parameter
-gwl_gsa <- filter(gwl, GSA_ID == params$AOI)
+gwl_gsa <- filter(gwl, web_name == params$AOI)
 
 # value boxes
 # icons: https://ionic.io/ionicons/v2
