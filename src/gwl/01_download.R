@@ -47,23 +47,34 @@ gwl <- files_meas %>%
   reduce(left_join, "SITE_CODE") %>% 
   select(-MONITORING_PROGRAM.x, MONITORING_PROGRAM = MONITORING_PROGRAM.y) %>% 
   # remove old measurements and nonsense above land surface measurements
-  filter(MSMT_DATE >= lubridate::ymd("1960-01-01") & GSE_GWE >= 0) %>%
+  filter(MSMT_DATE >= lubridate::ymd("1980-01-01") & GSE_GWE >= 0) %>%
   st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4269, remove = FALSE) %>% 
   st_transform(3310) %>% 
-  # add GSA data and remove: stations outside of GSAs
+  # add GSA data 
   st_join(gsa) %>% 
   # overwrite B118 boundaries because some are missing and others are wrong
   select(-BASIN_CODE) %>% 
   st_join(select(b118, BASIN_CODE = Basin_Subb)) %>% 
   # only retain points in B118 basins
   filter(!is.na(BASIN_CODE)) %>%
-  st_drop_geometry() %>% 
+  st_drop_geometry() %>% # drop geometry for faster in-memory processing
   # only retain sites with at least 3 measurements
+  dtplyr::lazy_dt() %>% 
   group_by(SITE_CODE) %>% 
   mutate(n = n()) %>% 
   ungroup() %>% 
-  filter(n >= 3) 
-  
+  filter(n >= 3) %>% 
+  # summarize groundwater levels to monthly vals and take most recent observation
+  mutate(
+    MSMT_DATE_SUMMARY = ymd(paste(year(MSMT_DATE), month(MSMT_DATE), "15", sep = "-"))
+  ) %>% 
+  group_by(SITE_CODE, MSMT_DATE_SUMMARY) %>% 
+  arrange(MSMT_DATE_SUMMARY) %>% 
+  mutate(GSE_GWE_SUMMARY = mean(GSE_GWE, na.rm = TRUE)) %>% 
+  slice(1) %>% 
+  ungroup() %>% 
+  collect()
+
 cat("done.\n")
 
 
