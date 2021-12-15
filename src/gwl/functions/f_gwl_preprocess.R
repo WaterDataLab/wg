@@ -23,6 +23,10 @@ f_gwl_preprocess <- function(input_basin){
   
   
   # add observation count and time range. site code has no NA vals
+  percentile_levels <- c("highest recorded","> 75th percentile", 
+                         "50-75th percentile", "25-50th percentile",
+                         "< 25th percentile", "lowest recorded")
+  
   maoi <- gwl %>% 
     filter(web_name == input_basin) %>% 
     group_by(SITE_CODE) %>% 
@@ -39,9 +43,10 @@ f_gwl_preprocess <- function(input_basin){
         PERCENTILE > 0 & PERCENTILE < 0.25 ~ "< 25th percentile",
         PERCENTILE >= 0.25 & PERCENTILE < 0.50 ~ "25-50th percentile",
         PERCENTILE >= 0.50 & PERCENTILE < 0.75 ~ "50-75th percentile",
-        PERCENTILE >= 0.75 & PERCENTILE < 1 ~ "75-99th percentile",
-      )
-    )
+        PERCENTILE >= 0.75 & PERCENTILE < 1 ~ "> 75th percentile"
+      ),
+      PERCENTILE_BIN = factor(PERCENTILE_BIN, levels = percentile_levels)
+    ) %>% 
     ungroup()
   
   
@@ -50,20 +55,36 @@ f_gwl_preprocess <- function(input_basin){
   
   # ggplots of DBGS - IMPT TO SORT!!!
   sc <- unique(maoi$SITE_CODE) %>% sort() 
-  ns <- group_by(maoi, SITE_CODE) %>% slice(1) %>% ungroup() %>% arrange(SITE_CODE) 
+  ns <- group_by(maoi, SITE_CODE) %>% 
+    arrange(desc(MSMT_DATE)) %>% 
+    slice(1) %>% 
+    ungroup() %>% 
+    mutate(
+      MSMT_DATE_LATEST = MSMT_DATE,
+      WATER_YEAR = f_calculate_water_year(MSMT_DATE),
+      WATER_YEAR_LABEL = ifelse(
+        WATER_YEAR > (year(Sys.Date()) - 1), 
+        paste(WATER_YEAR, "WY"), paste((year(Sys.Date()) - 1), "WY & earlier"))
+    ) %>% 
+    arrange(SITE_CODE) 
   ns$lab <- paste0(
     "<p><b>state well num:</b> ", ns$SWN, "</p>",
     "<p><b>coords x:</b> ", ns$LONGITUDE, "</p>",
     "<p><b>coords y:</b> ", ns$LATITUDE, "</p>",
     "<p><b>n samp:</b> ", ns$SAMPLE_COUNT, "</p>",
     "<p><b>t range:</b> ", ns$SAMPLE_RANGE, "</p>",
+    "<p><b>date last measured:</b> ", ns$MSMT_DATE_LATEST, "</p>",
     "<p><b>depth (ft):</b> ", ns$WELL_DEPTH, "</p>",
     "<p><b>perf int (ft):</b> ", ns$TOP_PRF_INT, " to ", ns$BOT_PRF_INT, "</p>",
     "<p><b>use:</b> ", ns$WELL_USE, "</p>",
     "<p><b>type:</b> ", ns$WELL_TYPE, "</p>",
-    "<p><b>agency:</b> ", ns$WLM_ORG_NAME, "</p>",
-    "<p><b>GSA:</b> ", ns$GSA_Name, "</p>"
+    "<p><b>agency:</b> ", ns$WLM_ORG_NAME, "</p>"
+    # "<p><b>GSA:</b> ", ns$GSA_Name, "</p>"
   )
+  # reorder water year factor levels
+  wyu <- unique(ns$WATER_YEAR_LABEL)
+  wyu <- c(wyu[1], rev(wyu[-1]))
+  ns$WATER_YEAR_LABEL <- factor(ns$WATER_YEAR_LABEL, levels = wyu)
   
   
   # add seasons
@@ -161,9 +182,9 @@ f_gwl_preprocess <- function(input_basin){
   }
   
   # leaflet
-  pal <- colorFactor(colormap::colormap(colormap::colormaps$viridis, 
-                                        nshades = length(unique(ns$WLM_ORG_NAME))), 
-                     domain = ns$WLM_ORG_NAME)
+  pal <- colorFactor(colormap::colormap(colormap::colormaps$jet,
+                                        nshades = length(unique(ns$PERCENTILE_BIN))), 
+                     domain = ns$PERCENTILE_BIN)
   
   # prep gwl data as points for leaflet
   ns <- st_as_sf(ns, coords = c("LONGITUDE", "LATITUDE"), crs = 4269, remove = FALSE)
@@ -178,36 +199,41 @@ f_gwl_preprocess <- function(input_basin){
                 fillOpacity = 0,
                 color = "black") %>%
     addCircleMarkers(data = st_transform(ns, 4326), 
-                     color = ~pal(ns$WLM_ORG_NAME), 
+                     color = ~pal(ns$PERCENTILE_BIN), 
                      stroke = FALSE,
                      radius = 4, 
                      fillOpacity = .8,
                      popup = p,
-                     #label = lapply(ns$lab, htmltools::HTML),
-                     group = ns$WLM_ORG_NAME) %>% 
-    addLegend(pal = pal, 
-              values = ns$WLM_ORG_NAME,
-              title = "Agency",
-              position = "topright") %>% 
+                     label = lapply(ns$lab, htmltools::HTML),
+                     group = ns$WATER_YEAR_LABEL) %>% 
     addLayersControl(
       baseGroups    = c("Light", "Dark", "Street", "World"),
-      overlayGroups = ns$WLM_ORG_NAME,
+      overlayGroups = list("group1" = sort(wyu)),
       options       = layersControlOptions(collapsed = FALSE,
                                            position = "topright")) %>% 
+    # JS for layer titles
+    htmlwidgets::onRender(
+      "function() {
+          $('.leaflet-control-layers-overlays').prepend('Overlay options');
+          $('.leaflet-control-layers-list').prepend('Base layer options');
+    }") %>% 
+    addLegend(pal = pal, 
+              values = ns$PERCENTILE_BIN,
+              title = "Last recorded level",
+              position = "topright") %>% 
+    # uncheck all overlay groups except most recent water year
+    hideGroup(group = setdiff(wyu, wyu[-c(1:(length(wyu)-1))])) %>% 
     # JS for polygon popups
-    onRender(
+    htmlwidgets::onRender(
       "function(el,x) {
     this.on('popupopen', function() {HTMLWidgets.staticRender(); remove()})
-    }"
-    ) %>%
+    }") %>%
     f_add_deps("plotly") %>%
     htmltools::attachDependencies(
-      plotly:::plotlyMainBundle(), append = TRUE
-    ) %>%
+      plotly:::plotlyMainBundle(), append = TRUE) %>%
     htmltools::attachDependencies(
-      crosstalk::crosstalkLibs(),  append = TRUE
-    ) %>%
-    browsable()
+      crosstalk::crosstalkLibs(),  append = TRUE) %>%
+    browsable() 
   
   return(list(l = l, maoi = maoi))
 }
