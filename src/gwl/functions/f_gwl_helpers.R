@@ -20,7 +20,7 @@ f_add_deps <- function(dtbl, name, pkg = name) {
 
 # write dashboards
 f_write_dashboard <- function(x) {
-  dir_out = here::here(glue::glue("content/gsa-{x}"))
+  dir_out = here::here(glue::glue("content/b118-{x}"))
   unlink(dir_out, recursive = TRUE)
   dir_create(dir_out)
   rmarkdown::render(input       = here("src/gwl/02_dashboard.Rmd"), 
@@ -31,7 +31,7 @@ f_write_dashboard <- function(x) {
 
 # encrpyt a file (written dashboard in this case)
 f_encrypt_file <- function(x){
-  file     = here::here(glue::glue("content/gsa-{x}/index.html"))
+  file     = here::here(glue::glue("content/b118-{x}/index.html"))
   template = here::here("src/etc/password_template.html")
   cmd      = glue::glue("staticrypt {file} password -o {file} -f {template}")
   system(cmd)
