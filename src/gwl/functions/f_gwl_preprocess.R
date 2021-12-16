@@ -208,7 +208,7 @@ f_gwl_preprocess <- function(input_basin){
                      group = ns$WATER_YEAR_LABEL) %>% 
     addLayersControl(
       baseGroups    = c("Light", "Dark", "Street", "World"),
-      overlayGroups = list("group1" = sort(wyu)),
+      overlayGroups = sort(wyu),
       options       = layersControlOptions(collapsed = FALSE,
                                            position = "topright")) %>% 
     # JS for layer titles
