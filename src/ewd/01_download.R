@@ -5,7 +5,7 @@ library(httr)
 library(patchwork)
 
 # load CDEC API function
-source(here("src/functions/f_cdec_api.R"))
+source(here("src/ewd/functions/f_cdec_api.R"))
 
 path = "dynamicapp/req/CSVDataServlet"
 
@@ -17,7 +17,7 @@ query = list(Stations = "MDB",
 sensor_nums <- 291:292
 
 # flow API response
-resp_flow <- map(sensor_nums, 
+resp_flow <- map(sensor_nums,  
                  ~f_cdec_api(path = path, 
                              query = c(query, dur_code = "E", SensorNums = .x)))
 flow <- map_df(resp_flow, "content") %>%
@@ -71,4 +71,4 @@ p_bat <- bat %>%
 
 
 p <- p_flow + p_bat + plot_layout(nrow = 2)
-ggsave(here("figures/p_daily_values.png"), height = 8, width = 10)
+ggsave(here("src/ewd/figures/p_daily_values.png"), height = 8, width = 10)
