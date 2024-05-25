@@ -38,8 +38,8 @@ SPY <- getSymbols("SPY", from = Sys.Date() - lubridate::years(1), auto.assign = 
 vol_in <- (344.39 - adjustOHLC(SPY))*-10
 vol_out <- vol_in*-1
 hyd_head <- ((20 - vol_in/-10)*-1)+40
-FB <- getSymbols("FB", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE)
-pressure <- (382 - adjustOHLC(FB))/1.2
+META <- getSymbols("META", from = Sys.Date() - lubridate::years(1), auto.assign = FALSE)
+pressure <- (382 - adjustOHLC(META))/1.2
 
 # value boxes
 # icons: https://ionic.io/ionicons/v2
